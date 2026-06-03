@@ -317,6 +317,7 @@ model TeamMember {
   bio          String?   @db.Text
   avatarUrl    String?   @map("avatar_url") @db.VarChar(500)
   discordTag   String?   @map("discord_tag") @db.VarChar(50)
+  badgeColor   String    @default("#1C559A") @map("badge_color") @db.VarChar(7)
   sortOrder    Int       @default(0) @map("sort_order")
   isActive     Boolean   @default(true) @map("is_active")
   joinedAt     DateTime? @map("joined_at")

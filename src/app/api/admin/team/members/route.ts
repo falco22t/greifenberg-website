@@ -25,13 +25,14 @@ export async function POST(req: NextRequest) {
     const session = await requireAuth('ADMIN')
     const {
       email, displayName, position, displayRole,
-      departmentId, bio, discordTag, avatarUrl,
+      badgeColor, departmentId, bio, discordTag, avatarUrl,
       userRole, sortOrder,
     } = await req.json() as {
       email?: string
       displayName: string
       position: string
       displayRole?: string
+      badgeColor?: string
       departmentId?: number
       bio?: string
       discordTag?: string
@@ -67,6 +68,7 @@ export async function POST(req: NextRequest) {
         displayName: displayName.trim(),
         position: position.trim(),
         displayRole: displayRole?.trim() ?? null,
+        badgeColor: badgeColor ?? '#1C559A',
         departmentId: departmentId ?? null,
         bio: bio?.trim() ?? null,
         discordTag: discordTag?.trim() ?? null,

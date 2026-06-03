@@ -35,6 +35,7 @@ interface TeamMember {
   displayName: string
   position: string
   displayRole: string | null
+  badgeColor: string
   departmentId: number | null
   bio: string | null
   discordTag: string | null
@@ -82,6 +83,7 @@ function MemberForm({ initial, departments, onSave, onCancel }: {
   const [displayName, setDisplayName] = useState(initial?.displayName ?? '')
   const [position, setPosition] = useState(initial?.position ?? '')
   const [displayRole, setDisplayRole] = useState(initial?.displayRole ?? '')
+  const [badgeColor, setBadgeColor] = useState(initial?.badgeColor ?? '#1C559A')
   const [deptId, setDeptId] = useState<string>(initial?.departmentId?.toString() ?? '')
   const [bio, setBio] = useState(initial?.bio ?? '')
   const [discordTag, setDiscordTag] = useState(initial?.discordTag ?? '')
@@ -111,14 +113,19 @@ function MemberForm({ initial, departments, onSave, onCancel }: {
             className="h-8 text-sm bg-transparent border-white/10" />
         </div>
         <div>
-          <label className="text-xs text-slate-400 mb-1 block">Position *</label>
-          <Input value={position} onChange={e => setPosition(e.target.value)} placeholder="z.B. Serverleiter"
+          <label className="text-xs text-slate-400 mb-1 block">Anzeige-Rolle (grauer Untertitel)</label>
+          <Input value={displayRole} onChange={e => setDisplayRole(e.target.value)} placeholder="z.B. Gründer, Support"
             className="h-8 text-sm bg-transparent border-white/10" />
         </div>
         <div>
-          <label className="text-xs text-slate-400 mb-1 block">Anzeige-Rolle (öffentlich sichtbar)</label>
-          <Input value={displayRole} onChange={e => setDisplayRole(e.target.value)} placeholder="z.B. Gründer, Support"
-            className="h-8 text-sm bg-transparent border-white/10" />
+          <label className="text-xs text-slate-400 mb-1 block">Position * (farbiges Badge)</label>
+          <div className="flex gap-2 items-center">
+            <input type="color" value={badgeColor} onChange={e => setBadgeColor(e.target.value)}
+              className="w-8 h-8 rounded cursor-pointer border-0 bg-transparent flex-shrink-0" />
+            <Input value={position} onChange={e => setPosition(e.target.value)} placeholder="z.B. Serverleiter"
+              className="h-8 text-sm bg-transparent border-white/10 flex-1" />
+          </div>
+          <p className="text-[10px] text-slate-500 mt-1">Farbe des Badges wählen</p>
         </div>
         <div>
           <label className="text-xs text-slate-400 mb-1 block">Discord-Tag</label>
@@ -161,7 +168,7 @@ function MemberForm({ initial, departments, onSave, onCancel }: {
         <Button size="sm" className="gradient-brand text-white h-8 px-4"
           onClick={() => onSave({
             ...(isNew && { email: email || undefined }),
-            displayName, position,
+            displayName, position, badgeColor,
             displayRole: displayRole || undefined,
             departmentId: deptId ? Number(deptId) : null,
             bio: bio || undefined,

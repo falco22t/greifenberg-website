@@ -13,6 +13,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
       displayName?: string
       position?: string
       displayRole?: string
+      badgeColor?: string
       departmentId?: number | null
       bio?: string
       discordTag?: string
@@ -36,6 +37,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
         ...(body.displayName !== undefined && { displayName: body.displayName.trim() }),
         ...(body.position !== undefined && { position: body.position.trim() }),
         ...(body.displayRole !== undefined && { displayRole: body.displayRole?.trim() || null }),
+        ...(body.badgeColor !== undefined && { badgeColor: body.badgeColor }),
         ...(body.departmentId !== undefined && { departmentId: body.departmentId }),
         ...(body.bio !== undefined && { bio: body.bio?.trim() || null }),
         ...(body.discordTag !== undefined && { discordTag: body.discordTag?.trim() || null }),

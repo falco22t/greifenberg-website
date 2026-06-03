@@ -98,7 +98,7 @@ type Member = {
   bio: string | null
   avatarUrl: string | null
   discordTag: string | null
-  user: { role: import('@prisma/client').UserRole } | null
+  badgeColor: string
 }
 
 function MemberGrid({ members, color }: { members: Member[]; color: string }) {
@@ -116,16 +116,19 @@ function MemberGrid({ members, color }: { members: Member[]; color: string }) {
             </Avatar>
             <div>
               <p className="font-bold text-white">{member.displayName}</p>
-              <p className="text-xs text-slate-400">{member.position}</p>
+              {member.displayRole && (
+                <p className="text-xs text-slate-400">{member.displayRole}</p>
+              )}
             </div>
           </div>
           {member.bio && <p className="text-slate-400 text-xs leading-relaxed line-clamp-3 mb-3">{member.bio}</p>}
           <div className="flex items-center justify-between">
-            {member.displayRole && (
-              <Badge variant="outline" className="text-[10px] border border-brand/40 text-brand-light">
-                {member.displayRole}
-              </Badge>
-            )}
+            <span
+              className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full"
+              style={{ backgroundColor: member.badgeColor + '25', color: member.badgeColor, border: `1px solid ${member.badgeColor}50` }}
+            >
+              {member.position}
+            </span>
             {member.discordTag && (
               <span className="text-xs text-slate-500">{member.discordTag}</span>
             )}
