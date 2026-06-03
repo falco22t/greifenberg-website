@@ -10,6 +10,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     await requireAuth('ADMIN')
     const { id } = await params
     const body = await req.json() as {
+      email?: string | null
       displayName?: string
       position?: string
       displayRole?: string
@@ -26,14 +27,38 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     const member = await prisma.teamMember.findUnique({ where: { id: Number(id) } })
     if (!member) return NextResponse.json({ error: 'Nicht gefunden.' }, { status: 404 })
 
-    // Update permission role on the linked user
-    if (body.userRole && member.userId) {
+    // Account-Verknüpfung ändern
+    let newUserId: number | null | undefined = undefined
+    if (body.email !== undefined) {
+      if (!body.email) {
+        // E-Mail leer → Account trennen
+        newUserId = null
+      } else {
+        const user = await prisma.user.findUnique({ where: { email: body.email } })
+        if (!user) return NextResponse.json({ error: 'Kein Nutzer mit dieser E-Mail gefunden.' }, { status: 404 })
+
+        // Prüfen ob dieser User bereits ein anderes Teammitglied ist
+        const conflict = await prisma.teamMember.findFirst({
+          where: { userId: user.id, id: { not: Number(id) } },
+        })
+        if (conflict) return NextResponse.json({ error: 'Dieser Account ist bereits einem anderen Teammitglied zugeordnet.' }, { status: 409 })
+
+        newUserId = user.id
+
+        // Berechtigungs-Rolle setzen wenn angegeben
+        if (body.userRole) {
+          await prisma.user.update({ where: { id: user.id }, data: { role: body.userRole } })
+        }
+      }
+    } else if (body.userRole && member.userId) {
+      // Nur Rolle aktualisieren wenn kein E-Mail-Wechsel
       await prisma.user.update({ where: { id: member.userId }, data: { role: body.userRole } })
     }
 
     const updated = await prisma.teamMember.update({
       where: { id: Number(id) },
       data: {
+        ...(newUserId !== undefined && { userId: newUserId }),
         ...(body.displayName !== undefined && { displayName: body.displayName.trim() }),
         ...(body.position !== undefined && { position: body.position.trim() }),
         ...(body.displayRole !== undefined && { displayRole: body.displayRole?.trim() || null }),
@@ -53,7 +78,8 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     return NextResponse.json({ member: updated })
   } catch (err: unknown) {
     if (err instanceof Error && err.message === 'FORBIDDEN') return NextResponse.json({ error: 'Keine Berechtigung.' }, { status: 403 })
-    return NextResponse.json({ error: 'Fehler.' }, { status: 500 })
+    const msg = err instanceof Error ? err.message : 'Fehler.'
+    return NextResponse.json({ error: msg }, { status: 500 })
   }
 }
 

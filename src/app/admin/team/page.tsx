@@ -79,7 +79,7 @@ function MemberForm({ initial, departments, onSave, onCancel }: {
   onSave: (d: Record<string, unknown>) => void
   onCancel: () => void
 }) {
-  const [email, setEmail] = useState('')
+  const [email, setEmail] = useState(initial?.user?.email ?? '')
   const [displayName, setDisplayName] = useState(initial?.displayName ?? '')
   const [position, setPosition] = useState(initial?.position ?? '')
   const [displayRole, setDisplayRole] = useState(initial?.displayRole ?? '')
@@ -111,16 +111,17 @@ function MemberForm({ initial, departments, onSave, onCancel }: {
     <div className="p-5 rounded-xl bg-surface-2 border border-white/8 space-y-4">
       <h3 className="font-bold text-white text-sm">{isNew ? 'Neues Teammitglied' : 'Mitglied bearbeiten'}</h3>
 
-      {isNew && (
-        <div>
-          <label className="text-xs text-slate-400 mb-1 block">E-Mail-Adresse des Nutzers (optional — verknüpft einen Account)</label>
-          <div className="relative">
-            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-500" />
-            <Input value={email} onChange={e => setEmail(e.target.value)} placeholder="spieler@beispiel.de"
-              className="h-8 text-sm bg-transparent border-white/10 pl-8" />
-          </div>
+      <div>
+        <label className="text-xs text-slate-400 mb-1 block">
+          Account verknüpfen (E-Mail-Adresse){initial?.user && <span className="ml-2 text-green-400">✓ verknüpft</span>}
+        </label>
+        <div className="relative">
+          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-500" />
+          <Input value={email} onChange={e => setEmail(e.target.value)} placeholder="spieler@beispiel.de"
+            className="h-8 text-sm bg-transparent border-white/10 pl-8" />
         </div>
-      )}
+        <p className="text-[10px] text-slate-500 mt-1">Leer lassen = kein Account verknüpft</p>
+      </div>
 
       {/* Avatar Upload */}
       <div>
@@ -213,7 +214,7 @@ function MemberForm({ initial, departments, onSave, onCancel }: {
         <Button size="sm" variant="ghost" className="h-8 text-slate-400 hover:text-white" onClick={onCancel}>Abbrechen</Button>
         <Button size="sm" className="gradient-brand text-white h-8 px-4"
           onClick={() => onSave({
-            ...(isNew && { email: email || undefined }),
+            email: email || null,
             displayName, position, badgeColor,
             displayRole: displayRole || undefined,
             avatarUrl: avatarUrl || undefined,
