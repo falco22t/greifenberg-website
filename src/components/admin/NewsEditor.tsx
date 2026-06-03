@@ -44,7 +44,9 @@ export default function NewsEditor({ categories, initial = {} }: Props) {
 
   const save = async (publish?: boolean) => {
     if (!title.trim()) { setError('Titel ist erforderlich.'); return }
-    if (!content.replace(/<[^>]*>/g, '').trim()) { setError('Inhalt ist erforderlich.'); return }
+    // Leerer TipTap-Default <p></p> gilt als kein Inhalt
+    const plainText = content.replace(/<[^>]*>/g, '').trim()
+    if (!plainText && !content.trim()) { setError('Bitte Inhalt eingeben.'); return }
 
     setSaving(true)
     setError(null)

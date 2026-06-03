@@ -3,18 +3,19 @@ import { redirect } from 'next/navigation'
 import { getSession } from '@/lib/auth'
 import {
   LayoutDashboard, Users, Newspaper, BookOpen, MessageSquare,
-  Ticket, Users2, FileText, Settings, Shield, ChevronRight,
+  Ticket, Users2, FileText, Settings, Shield, ChevronRight, BookMarked,
 } from 'lucide-react'
 
 const navItems = [
-  { label: 'Dashboard',   href: '/admin',          icon: LayoutDashboard },
-  { label: 'Benutzer',    href: '/admin/users',     icon: Users },
-  { label: 'News',        href: '/admin/news',      icon: Newspaper },
-  { label: 'Gesetze',     href: '/admin/gesetze',   icon: BookOpen },
-  { label: 'Forum',       href: '/admin/forum',     icon: MessageSquare },
-  { label: 'Tickets',     href: '/admin/tickets',   icon: Ticket },
-  { label: 'Team',        href: '/admin/team',      icon: Users2 },
-  { label: 'Logs',        href: '/admin/logs',      icon: FileText },
+  { label: 'Dashboard',     href: '/admin',               icon: LayoutDashboard },
+  { label: 'Benutzer',      href: '/admin/users',         icon: Users },
+  { label: 'News',          href: '/admin/news',          icon: Newspaper },
+  { label: 'Guides',        href: '/admin/guides',        icon: BookMarked },
+  { label: 'Gesetze',       href: '/admin/gesetze',       icon: BookOpen },
+  { label: 'Forum',         href: '/admin/forum',         icon: MessageSquare },
+  { label: 'Tickets',       href: '/admin/tickets',       icon: Ticket },
+  { label: 'Team',          href: '/admin/team',          icon: Users2 },
+  { label: 'Logs',          href: '/admin/logs',          icon: FileText },
   { label: 'Einstellungen', href: '/admin/einstellungen', icon: Settings },
 ]
 

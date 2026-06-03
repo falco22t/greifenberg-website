@@ -60,6 +60,11 @@ export default function RichEditor({ content = '', onChange, placeholder = 'Inha
       Highlight.configure({ HTMLAttributes: { class: 'bg-brand/20 text-white rounded px-0.5' } }),
     ],
     content,
+    onCreate: ({ editor }) => {
+      // Initial content direkt an Parent melden
+      const html = editor.getHTML()
+      if (html && html !== '<p></p>') onChange(html)
+    },
     onUpdate: ({ editor }) => onChange(editor.getHTML()),
     editorProps: {
       attributes: {
