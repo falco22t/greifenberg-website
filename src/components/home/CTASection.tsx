@@ -28,23 +28,23 @@ export default function CTASection() {
               Registriere dich jetzt, lies dir unseren Einsteiger-Guide durch und tauche in die Welt von Greifenberg ein.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link href="/auth/register">
+              <a href="https://discord.gg/TspeGxXr2C" target="_blank" rel="noopener noreferrer">
                 <Button
                   size="lg"
                   className="gradient-brand glow-brand text-white font-bold px-8 py-6 rounded-xl gap-2 hover:opacity-90"
                 >
-                  Jetzt registrieren
+                  Discord beitreten
                   <ArrowRight className="w-5 h-5" />
                 </Button>
-              </Link>
-              <Link href="https://discord.gg/greifenberg" target="_blank" rel="noopener noreferrer">
+              </a>
+              <Link href="/guides">
                 <Button
                   size="lg"
                   variant="outline"
                   className="border-white/10 text-slate-300 hover:text-white hover:bg-white/5 px-8 py-6 rounded-xl gap-2"
                 >
                   <MessageCircle className="w-5 h-5" />
-                  Discord beitreten
+                  Einsteiger-Guide
                 </Button>
               </Link>
             </div>

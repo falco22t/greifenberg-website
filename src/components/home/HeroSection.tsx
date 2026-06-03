@@ -79,7 +79,7 @@ export default function HeroSection() {
           transition={{ duration: 0.6, delay: 0.3 }}
           className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16"
         >
-          <Link href="/auth/register">
+          <a href="https://discord.gg/TspeGxXr2C" target="_blank" rel="noopener noreferrer">
             <Button
               size="lg"
               className="gradient-brand glow-brand text-white font-bold px-8 py-6 text-base rounded-xl hover:opacity-90 transition-opacity gap-2"
@@ -87,7 +87,7 @@ export default function HeroSection() {
               Jetzt beitreten
               <ArrowRight className="w-5 h-5" />
             </Button>
-          </Link>
+          </a>
           <Link href="/guides">
             <Button
               size="lg"
@@ -100,25 +100,6 @@ export default function HeroSection() {
           </Link>
         </motion.div>
 
-        {/* Quick Stats Row */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          className="flex flex-wrap items-center justify-center gap-8 text-sm text-slate-400"
-        >
-          {[
-            { icon: Users, label: 'Aktive Spieler', value: '500+' },
-            { icon: Zap, label: 'Uptime', value: '99.9%' },
-            { icon: Play, label: 'Slots', value: '64' },
-          ].map(({ icon: Icon, label, value }) => (
-            <div key={label} className="flex items-center gap-2">
-              <Icon className="w-4 h-4 text-brand-light" />
-              <span className="text-white font-bold">{value}</span>
-              <span>{label}</span>
-            </div>
-          ))}
-        </motion.div>
       </div>
 
       {/* Bottom fade */}

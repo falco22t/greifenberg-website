@@ -1,13 +1,13 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Users, Clock, MessageSquare, Star } from 'lucide-react'
+import { Clock, MessageSquare, BookOpen, Users } from 'lucide-react'
 
 const stats = [
-  { icon: Users, value: '500+', label: 'Registrierte Spieler', color: 'text-brand-light' },
-  { icon: Clock, value: '24/7', label: 'Server online', color: 'text-green-400' },
-  { icon: MessageSquare, value: '10k+', label: 'Forum-Beiträge', color: 'text-purple-400' },
-  { icon: Star, value: '3+', label: 'Jahre aktiv', color: 'text-amber-400' },
+  { icon: Clock,         value: '24/7',   label: 'Server online',         color: 'text-green-400'  },
+  { icon: Users,         value: 'FiveM',  label: 'Roleplay Server',        color: 'text-brand-light' },
+  { icon: BookOpen,      value: '6',      label: 'Gesetzbücher',           color: 'text-amber-400'  },
+  { icon: MessageSquare, value: 'Aktiv',  label: 'Community & Forum',      color: 'text-purple-400' },
 ]
 
 export default function StatsSection() {
@@ -25,7 +25,7 @@ export default function StatsSection() {
               transition={{ delay: i * 0.1 }}
               className="glass rounded-2xl p-6 text-center hover:border-brand/20 transition-colors"
             >
-              <div className={`inline-flex p-3 rounded-xl bg-white/5 mb-3`}>
+              <div className="inline-flex p-3 rounded-xl bg-white/5 mb-3">
                 <stat.icon className={`w-6 h-6 ${stat.color}`} />
               </div>
               <div className="text-3xl font-black text-white mb-1">{stat.value}</div>
