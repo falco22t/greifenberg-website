@@ -4,7 +4,7 @@ import { ChevronRight, BookMarked, Clock, ArrowRight } from 'lucide-react'
 import { prisma } from '@/lib/prisma'
 
 export const metadata: Metadata = { title: 'Guides' }
-export const revalidate = 60
+export const revalidate = 0
 
 async function getData() {
   try {

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { prisma } from '@/lib/prisma'
 import { requireAuth } from '@/lib/auth'
 
@@ -13,6 +14,8 @@ export async function PATCH(req: NextRequest, { params }: Params) {
       where: { id: Number(id) },
       data: { ...body, categoryId: body.categoryId ?? null },
     })
+    revalidatePath('/guides')
+    revalidatePath(`/guides/${guide.slug}`)
     return NextResponse.json({ guide })
   } catch (err: unknown) {
     if (err instanceof Error && err.message === 'FORBIDDEN') return NextResponse.json({ error: 'Keine Berechtigung.' }, { status: 403 })

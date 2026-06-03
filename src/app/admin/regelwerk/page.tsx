@@ -81,6 +81,7 @@ export default function AdminRegelwerkPage() {
   const [addingSection, setAddingSection] = useState(false)
   const [addingRuleInSection, setAddingRuleInSection] = useState<number | null>(null)
   const [editing, setEditing] = useState<EditTarget | null>(null)
+  const [error, setError] = useState<string | null>(null)
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -128,11 +129,17 @@ export default function AdminRegelwerkPage() {
   }
 
   async function createRule(data: { number: string; title: string; content: string; sectionId: number }) {
-    await fetch('/api/admin/rules/items', {
+    setError(null)
+    const res = await fetch('/api/admin/rules/items', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     })
+    if (!res.ok) {
+      const d = await res.json() as { error: string }
+      setError(d.error ?? 'Fehler beim Speichern.')
+      return
+    }
     setAddingRuleInSection(null)
     await load()
   }
@@ -163,6 +170,10 @@ export default function AdminRegelwerkPage() {
           <Plus className="w-4 h-4" /> Abschnitt hinzufügen
         </Button>
       </div>
+
+      {error && (
+        <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">{error}</div>
+      )}
 
       {loading ? (
         <div className="space-y-3">

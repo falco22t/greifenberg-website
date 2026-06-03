@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { prisma } from '@/lib/prisma'
 import { requireAuth } from '@/lib/auth'
 import { z } from 'zod'
 
 const schema = z.object({
   title: z.string().min(3).max(255),
-  content: z.string().min(1),
+  content: z.string().nullable().optional().transform(s => s ?? ''),
   categoryId: z.number().optional().nullable(),
   estimatedReadMinutes: z.number().min(1).max(120).default(5),
   sortOrder: z.number().default(0),
@@ -29,6 +30,7 @@ export async function POST(req: NextRequest) {
       data: { title, slug, authorId: session.userId, ...rest, categoryId: rest.categoryId ?? null },
     })
 
+    revalidatePath('/guides')
     return NextResponse.json({ guide }, { status: 201 })
   } catch (err: unknown) {
     if (err instanceof Error && err.message === 'FORBIDDEN') return NextResponse.json({ error: 'Keine Berechtigung.' }, { status: 403 })

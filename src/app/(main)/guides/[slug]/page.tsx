@@ -5,7 +5,7 @@ import { ChevronRight, Clock, ArrowLeft } from 'lucide-react'
 import { prisma } from '@/lib/prisma'
 
 type Props = { params: Promise<{ slug: string }> }
-export const revalidate = 60
+export const revalidate = 0
 
 async function getGuide(slug: string) {
   try {
