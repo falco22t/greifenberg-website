@@ -15,6 +15,7 @@ const navItems = [
   { label: 'Forum',         href: '/admin/forum',         icon: MessageSquare },
   { label: 'Tickets',       href: '/admin/tickets',       icon: Ticket },
   { label: 'Team',          href: '/admin/team',          icon: Users2 },
+  { label: 'Regelwerk',     href: '/admin/regelwerk',     icon: Shield },
   { label: 'Logs',          href: '/admin/logs',          icon: FileText },
   { label: 'Einstellungen', href: '/admin/einstellungen', icon: Settings },
 ]

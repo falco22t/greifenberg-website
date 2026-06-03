@@ -1,28 +1,34 @@
 import Link from 'next/link'
 import { Shield, ExternalLink } from 'lucide-react'
 
-const footerLinks = {
-  'Navigation': [
-    { label: 'Startseite', href: '/' },
-    { label: 'News', href: '/news' },
-    { label: 'Forum', href: '/forum' },
-    { label: 'Team', href: '/team' },
-  ],
-  'Gesetze': [
-    { label: 'Strafgesetzbuch', href: '/gesetze/stgb' },
-    { label: 'Straßenverkehrsordnung', href: '/gesetze/stvo' },
-    { label: 'Polizeigesetz', href: '/gesetze/polg' },
-    { label: 'Alle Gesetzbücher', href: '/gesetze' },
-  ],
-  'Support': [
-    { label: 'Guide für Einsteiger', href: '/guides' },
-    { label: 'Support-Tickets', href: '/support' },
-    { label: 'Regelwerk', href: '/regelwerk' },
-    { label: 'Discord', href: 'https://discord.gg/greifenberg', external: true },
-  ],
-}
+interface LawBook { name: string; slug: string }
+interface FooterLink { label: string; href: string; external?: boolean }
 
-export default function Footer() {
+const navLinks: FooterLink[] = [
+  { label: 'Startseite', href: '/' },
+  { label: 'News', href: '/news' },
+  { label: 'Forum', href: '/forum' },
+  { label: 'Team', href: '/team' },
+]
+
+const supportLinks: FooterLink[] = [
+  { label: 'Guide für Einsteiger', href: '/guides' },
+  { label: 'Support-Tickets', href: '/support' },
+  { label: 'Regelwerk', href: '/regelwerk' },
+  { label: 'Discord', href: 'https://discord.gg/greifenberg', external: true },
+]
+
+export default function Footer({ lawBooks = [] }: { lawBooks?: LawBook[] }) {
+  const gesetzeLinks: FooterLink[] = [
+    ...lawBooks.map((b) => ({ label: b.name, href: `/gesetze/${b.slug}` })),
+    { label: 'Alle Gesetzbücher', href: '/gesetze' },
+  ]
+
+  const footerSections = [
+    { title: 'Navigation', links: navLinks },
+    { title: 'Gesetze', links: gesetzeLinks },
+    { title: 'Support', links: supportLinks },
+  ]
   return (
     <footer className="relative border-t border-white/5 mt-auto">
       <div className="absolute inset-0 gradient-brand-subtle pointer-events-none" />
@@ -46,9 +52,9 @@ export default function Footer() {
           </div>
 
           {/* Links */}
-          {Object.entries(footerLinks).map(([category, links]) => (
-            <div key={category}>
-              <h4 className="text-white font-semibold text-sm mb-4">{category}</h4>
+          {footerSections.map(({ title, links }) => (
+            <div key={title}>
+              <h4 className="text-white font-semibold text-sm mb-4">{title}</h4>
               <ul className="space-y-2.5">
                 {links.map((link) => (
                   <li key={link.href}>
