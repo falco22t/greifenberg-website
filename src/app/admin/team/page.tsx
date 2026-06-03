@@ -2,12 +2,12 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import {
-  Users2, Plus, Pencil, Trash2, Save, X, Building2, Mail, Shield
+  Users2, Plus, Pencil, Trash2, Save, X, Building2, Mail, Shield, Upload, ImageIcon
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
 type UserRole = 'GUEST' | 'USER' | 'MOD' | 'ADMIN' | 'OWNER'
 
@@ -88,6 +88,22 @@ function MemberForm({ initial, departments, onSave, onCancel }: {
   const [bio, setBio] = useState(initial?.bio ?? '')
   const [discordTag, setDiscordTag] = useState(initial?.discordTag ?? '')
   const [userRole, setUserRole] = useState<UserRole>(initial?.user?.role ?? 'USER')
+  const [avatarUrl, setAvatarUrl] = useState(initial?.avatarUrl ?? '')
+  const [uploading, setUploading] = useState(false)
+
+  async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setUploading(true)
+    try {
+      const form = new FormData()
+      form.append('file', file)
+      const res = await fetch('/api/admin/team/upload', { method: 'POST', body: form })
+      const data = await res.json() as { url?: string; error?: string }
+      if (data.url) setAvatarUrl(data.url)
+      else alert(data.error ?? 'Upload fehlgeschlagen.')
+    } finally { setUploading(false) }
+  }
 
   const isNew = !initial
 
@@ -105,6 +121,36 @@ function MemberForm({ initial, departments, onSave, onCancel }: {
           </div>
         </div>
       )}
+
+      {/* Avatar Upload */}
+      <div>
+        <label className="text-xs text-slate-400 mb-2 block">Profilbild</label>
+        <div className="flex items-center gap-3">
+          <div className="w-14 h-14 rounded-xl bg-surface-1 border border-white/10 flex items-center justify-center overflow-hidden flex-shrink-0">
+            {avatarUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+            ) : (
+              <ImageIcon className="w-6 h-6 text-slate-600" />
+            )}
+          </div>
+          <div className="flex-1 space-y-1.5">
+            <label className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border border-white/10 text-xs text-slate-300 cursor-pointer hover:bg-white/5 transition-colors w-fit ${uploading ? 'opacity-50 pointer-events-none' : ''}`}>
+              <Upload className="w-3.5 h-3.5" />
+              {uploading ? 'Wird hochgeladen…' : 'Bild hochladen'}
+              <input type="file" accept="image/jpeg,image/png,image/webp,image/gif" className="hidden" onChange={handleImageUpload} />
+            </label>
+            <Input value={avatarUrl} onChange={e => setAvatarUrl(e.target.value)}
+              placeholder="Oder URL eingeben…"
+              className="h-7 text-xs bg-transparent border-white/10" />
+          </div>
+          {avatarUrl && (
+            <button onClick={() => setAvatarUrl('')} className="p-1.5 rounded-lg hover:bg-red-500/10 text-slate-500 hover:text-red-400 transition-colors">
+              <X className="w-3.5 h-3.5" />
+            </button>
+          )}
+        </div>
+      </div>
 
       <div className="grid grid-cols-2 gap-3">
         <div>
@@ -170,6 +216,7 @@ function MemberForm({ initial, departments, onSave, onCancel }: {
             ...(isNew && { email: email || undefined }),
             displayName, position, badgeColor,
             displayRole: displayRole || undefined,
+            avatarUrl: avatarUrl || undefined,
             departmentId: deptId ? Number(deptId) : null,
             bio: bio || undefined,
             discordTag: discordTag || undefined,
@@ -366,6 +413,7 @@ export default function AdminTeamPage() {
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-2.5">
                             <Avatar className="w-7 h-7">
+                              <AvatarImage src={m.avatarUrl ?? undefined} />
                               <AvatarFallback className="text-xs font-bold bg-brand/20 text-brand-light">
                                 {m.displayName.slice(0, 2).toUpperCase()}
                               </AvatarFallback>
