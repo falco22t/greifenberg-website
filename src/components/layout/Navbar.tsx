@@ -19,32 +19,33 @@ import { cn } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
 import { useAuth, hasRole } from '@/contexts/AuthContext'
 
-const navLinks = [
-  { label: 'News', href: '/news', icon: Newspaper },
-  { label: 'Forum', href: '/forum', icon: MessageSquare },
-  {
-    label: 'Gesetze',
-    href: '/gesetze',
-    icon: BookOpen,
-    children: [
-      { label: 'Strafgesetzbuch (StGB)', href: '/gesetze/stgb' },
-      { label: 'Straßenverkehrsordnung (StVO)', href: '/gesetze/stvo' },
-      { label: 'Polizeigesetz (PolG)', href: '/gesetze/polg' },
-      { label: 'Alle Gesetzbücher', href: '/gesetze' },
-    ],
-  },
-  { label: 'Team', href: '/team', icon: Users },
-  { label: 'Guide', href: '/guides', icon: BookMarked },
-  { label: 'Support', href: '/support', icon: HelpCircle },
-]
+interface LawBook { name: string; slug: string }
 
-export default function Navbar() {
+function buildNavLinks(lawBooks: LawBook[]) {
+  const lawChildren = [
+    ...lawBooks.map((b) => ({ label: b.name, href: `/gesetze/${b.slug}` })),
+    { label: 'Alle Gesetzbücher →', href: '/gesetze' },
+  ]
+
+  return [
+    { label: 'News',    href: '/news',    icon: Newspaper },
+    { label: 'Forum',   href: '/forum',   icon: MessageSquare },
+    { label: 'Gesetze', href: '/gesetze', icon: BookOpen, children: lawChildren.length > 1 ? lawChildren : undefined },
+    { label: 'Regelwerk', href: '/regelwerk', icon: BookOpen },
+    { label: 'Team',    href: '/team',    icon: Users },
+    { label: 'Guide',   href: '/guides',  icon: BookMarked },
+    { label: 'Support', href: '/support', icon: HelpCircle },
+  ]
+}
+
+export default function Navbar({ lawBooks = [] }: { lawBooks?: LawBook[] }) {
   const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [openDropdown, setOpenDropdown] = useState<string | null>(null)
   const pathname = usePathname()
   const router = useRouter()
   const { user, loading, logout } = useAuth()
+  const navLinks = buildNavLinks(lawBooks)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20)
