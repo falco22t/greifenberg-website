@@ -83,6 +83,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ member }, { status: 201 })
   } catch (err: unknown) {
     if (err instanceof Error && err.message === 'FORBIDDEN') return NextResponse.json({ error: 'Keine Berechtigung.' }, { status: 403 })
-    return NextResponse.json({ error: 'Fehler.' }, { status: 500 })
+    const msg = err instanceof Error ? err.message : 'Unbekannter Fehler'
+    console.error('[POST /api/admin/team/members]', err)
+    return NextResponse.json({ error: msg }, { status: 500 })
   }
 }

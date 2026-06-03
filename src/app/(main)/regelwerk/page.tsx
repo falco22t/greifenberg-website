@@ -4,7 +4,7 @@ import { ChevronRight, Shield, AlertTriangle, CheckCircle } from 'lucide-react'
 import { prisma } from '@/lib/prisma'
 
 export const metadata: Metadata = { title: 'Regelwerk' }
-export const revalidate = 60
+export const revalidate = 0
 
 async function getData() {
   try {

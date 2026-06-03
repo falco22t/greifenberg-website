@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { prisma } from '@/lib/prisma'
 import { requireAuth } from '@/lib/auth'
 import { log, LogAction } from '@/lib/logger'
@@ -85,6 +86,8 @@ export async function PUT(req: NextRequest, { params }: Params) {
     })
 
     await log({ userId: session.userId, action: LogAction.LAW_UPDATE, entityType: 'law_book', entityId: existing.id })
+    revalidatePath(`/gesetze/${slug}`)
+    revalidatePath('/gesetze')
     return NextResponse.json({ success: true })
   } catch (err: unknown) {
     if (err instanceof Error && err.message === 'FORBIDDEN') return NextResponse.json({ error: 'Keine Berechtigung.' }, { status: 403 })

@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge'
 import LawBookView from '@/components/laws/LawBookView'
 import type { LawBook } from '@/types/laws'
 
-export const revalidate = 60
+export const revalidate = 0
 
 interface Props {
   params: Promise<{ slug: string }>
