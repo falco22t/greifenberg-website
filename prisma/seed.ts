@@ -378,6 +378,63 @@ async function main() {
   }
   console.log(`✓ Guides seeded`)
 
+  // Regelwerk
+  const ruleSections = [
+    {
+      title: 'Allgemeines Verhalten', sortOrder: 1,
+      rules: [
+        { number: '§ 1', title: 'Respekt & Umgang', sortOrder: 1, content: 'Jeder Spieler hat sich respektvoll gegenüber anderen Spielern und dem Team zu verhalten. Beleidigungen, Diskriminierung oder Hassrede sind nicht toleriert und führen zu sofortigem Bann.' },
+        { number: '§ 2', title: 'Team-Entscheidungen', sortOrder: 2, content: 'Entscheidungen des Teams sind zu respektieren. Bei Uneinigkeit steht der offizielle Beschwerdeweg über Discord zur Verfügung. Öffentliches Diskreditieren von Team-Entscheidungen ist nicht erlaubt.' },
+        { number: '§ 3', title: 'Bug-Nutzung & Cheating', sortOrder: 3, content: 'Das bewusste Ausnutzen von Bugs, Exploits oder die Nutzung von Cheats führt zu einem permanenten Bann ohne Möglichkeit auf Entbannung.' },
+      ],
+    },
+    {
+      title: 'Roleplay-Regeln', sortOrder: 2,
+      rules: [
+        { number: '§ 4', title: 'Roleplay-Pflicht & FearRP', sortOrder: 1, content: 'Jeder Spieler ist verpflichtet, sein Rollenspiel realistisch zu gestalten. FearRP muss eingehalten werden — dein Charakter muss in gefährlichen Situationen lebenserhaltend handeln.' },
+        { number: '§ 5', title: 'New Life Rule (NLR)', sortOrder: 2, content: 'Nach dem Tod deines Charakters vergisst dieser alle Ereignisse, die zu seinem Tod geführt haben. Du darfst nicht sofort an den Ort des Todes zurückkehren oder Rache nehmen.' },
+        { number: '§ 6', title: 'Metagaming', sortOrder: 3, content: 'Die Nutzung von Informationen außerhalb des Rollenspiels (Discord, Streams etc.) für ingame-Vorteile ist verboten. Informationen die dein Charakter nicht wissen kann, dürfen nicht genutzt werden.' },
+        { number: '§ 7', title: 'Powergaming', sortOrder: 4, content: 'Powergaming — das Erzwingen von Aktionen auf andere Spieler ohne deren Möglichkeit zur Reaktion — ist untersagt.' },
+      ],
+    },
+    {
+      title: 'Verbotene Handlungen', sortOrder: 3,
+      rules: [
+        { number: '§ 8', title: 'RDM & VDM', sortOrder: 1, content: 'Random Deathmatch (RDM) — grundloses Töten — und Vehicle Deathmatch (VDM) — absichtliches Überfahren — sind verboten und werden mit Bann geahndet.' },
+        { number: '§ 9', title: 'Combat Logging', sortOrder: 2, content: 'Das absichtliche Verlassen des Servers während einer aktiven Roleplay-Situation ist nicht erlaubt und wird sanktioniert.' },
+        { number: '§ 10', title: 'Belästigung', sortOrder: 3, content: 'Belästigung, Stalking oder unerwünschter Kontakt gegenüber anderen Spielern oder Teammitgliedern — ingame oder auf externen Plattformen — ist streng verboten.' },
+      ],
+    },
+  ]
+
+  for (const section of ruleSections) {
+    const { rules, ...sectionData } = section
+    const created = await prisma.ruleSection.create({ data: sectionData })
+    for (const rule of rules) {
+      await prisma.rule.create({ data: { ...rule, sectionId: created.id } })
+    }
+  }
+  console.log(`✓ Regelwerk seeded`)
+
+  // Abteilungen (Departments)
+  const departments = [
+    { name: 'Führungsebene',  color: '#EF4444', sortOrder: 1 },
+    { name: 'Administation',  color: '#F59E0B', sortOrder: 2 },
+    { name: 'Moderationsebene', color: '#1C559A', sortOrder: 3 },
+    { name: 'Supportebene',   color: '#10B981', sortOrder: 4 },
+  ]
+
+  for (const dept of departments) {
+    await prisma.department.upsert({
+      where: { id: (await prisma.department.findFirst({ where: { name: dept.name } }))?.id ?? 0 },
+      update: {},
+      create: dept,
+    }).catch(async () => {
+      await prisma.department.create({ data: dept }).catch(() => {})
+    })
+  }
+  console.log(`✓ Departments seeded`)
+
   console.log('✅ Seeding complete!')
 }
 

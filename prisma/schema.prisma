@@ -313,6 +313,7 @@ model TeamMember {
   departmentId Int?      @map("department_id")
   displayName  String    @map("display_name") @db.VarChar(100)
   position     String    @db.VarChar(100)
+  displayRole  String?   @map("display_role") @db.VarChar(100)
   bio          String?   @db.Text
   avatarUrl    String?   @map("avatar_url") @db.VarChar(500)
   discordTag   String?   @map("discord_tag") @db.VarChar(50)
@@ -324,6 +325,33 @@ model TeamMember {
   department Department? @relation(fields: [departmentId], references: [id])
 
   @@map("team_members")
+}
+
+// ─────────────────────────────────────────────
+// REGELWERK
+// ─────────────────────────────────────────────
+
+model RuleSection {
+  id        Int    @id @default(autoincrement())
+  title     String @db.VarChar(150)
+  sortOrder Int    @default(0) @map("sort_order")
+
+  rules Rule[]
+
+  @@map("rule_sections")
+}
+
+model Rule {
+  id        Int    @id @default(autoincrement())
+  sectionId Int    @map("section_id")
+  number    String @db.VarChar(20)
+  title     String @db.VarChar(255)
+  content   String @db.Text
+  sortOrder Int    @default(0) @map("sort_order")
+
+  section RuleSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+
+  @@map("rules")
 }
 
 // ─────────────────────────────────────────────
