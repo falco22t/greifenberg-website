@@ -4,7 +4,6 @@ import { prisma } from '@/lib/prisma'
 import { ChevronRight, Shield } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
-import { ROLE_COLORS, ROLE_LABELS } from '@/types/forum'
 
 export const metadata: Metadata = { title: 'Team' }
 export const revalidate = 0
@@ -117,14 +116,14 @@ function MemberGrid({ members, color }: { members: Member[]; color: string }) {
             </Avatar>
             <div>
               <p className="font-bold text-white">{member.displayName}</p>
-              <p className="text-xs text-slate-400">{member.displayRole ?? member.position}</p>
+              <p className="text-xs text-slate-400">{member.position}</p>
             </div>
           </div>
           {member.bio && <p className="text-slate-400 text-xs leading-relaxed line-clamp-3 mb-3">{member.bio}</p>}
           <div className="flex items-center justify-between">
-            {member.user && (
-              <Badge variant="outline" className={`text-[10px] border ${ROLE_COLORS[member.user.role]}`}>
-                {ROLE_LABELS[member.user.role]}
+            {member.displayRole && (
+              <Badge variant="outline" className="text-[10px] border border-brand/40 text-brand-light">
+                {member.displayRole}
               </Badge>
             )}
             {member.discordTag && (
