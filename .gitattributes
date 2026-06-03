@@ -1,0 +1,3 @@
+# Alle Textdateien einheitlich mit LF (Linux-kompatibel)
+* text=auto eol=lf
+*.bat text eol=crlf

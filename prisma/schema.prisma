@@ -1,0 +1,424 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────────────────────────
+// NUTZER & AUTH
+// ─────────────────────────────────────────────
+
+model User {
+  id            Int       @id @default(autoincrement())
+  username      String    @unique @db.VarChar(32)
+  email         String    @unique @db.VarChar(255)
+  passwordHash  String    @map("password_hash") @db.VarChar(255)
+  discordId     String?   @unique @map("discord_id") @db.VarChar(32)
+  avatarUrl     String?   @map("avatar_url") @db.VarChar(500)
+  role          UserRole  @default(USER)
+  isBanned      Boolean   @default(false) @map("is_banned")
+  banReason     String?   @map("ban_reason") @db.Text
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+  lastLoginAt   DateTime? @map("last_login_at")
+
+  sessions          Session[]
+  forumThreads      ForumThread[]
+  forumPosts        ForumPost[]
+  forumReactions    ForumReaction[]
+  newsPosts         NewsPost[]
+  tickets           Ticket[]
+  ticketMessages    TicketMessage[]
+  guides            Guide[]
+  teamMember        TeamMember?
+  activityLogs      ActivityLog[]
+  notifications     Notification[]
+  updatedSettings   SiteSetting[]
+
+  @@map("users")
+}
+
+enum UserRole {
+  GUEST
+  USER
+  MOD
+  ADMIN
+  OWNER
+}
+
+model Session {
+  id          Int      @id @default(autoincrement())
+  userId      Int      @map("user_id")
+  tokenHash   String   @map("token_hash") @db.VarChar(255)
+  ipAddress   String?  @map("ip_address") @db.VarChar(45)
+  userAgent   String?  @map("user_agent") @db.VarChar(500)
+  expiresAt   DateTime @map("expires_at")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+// ─────────────────────────────────────────────
+// FORUM
+// ─────────────────────────────────────────────
+
+model ForumCategory {
+  id           Int      @id @default(autoincrement())
+  name         String   @db.VarChar(100)
+  slug         String   @unique @db.VarChar(100)
+  description  String?  @db.Text
+  icon         String?  @db.VarChar(50)
+  requiredRole UserRole @default(USER) @map("required_role")
+  sortOrder    Int      @default(0) @map("sort_order")
+  isVisible    Boolean  @default(true) @map("is_visible")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  threads ForumThread[]
+
+  @@map("forum_categories")
+}
+
+model ForumThread {
+  id           Int      @id @default(autoincrement())
+  categoryId   Int      @map("category_id")
+  authorId     Int      @map("author_id")
+  title        String   @db.VarChar(255)
+  slug         String   @unique @db.VarChar(255)
+  isPinned     Boolean  @default(false) @map("is_pinned")
+  isLocked     Boolean  @default(false) @map("is_locked")
+  viewsCount   Int      @default(0) @map("views_count")
+  repliesCount Int      @default(0) @map("replies_count")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+  lastPostAt   DateTime @default(now()) @map("last_post_at")
+
+  category ForumCategory @relation(fields: [categoryId], references: [id])
+  author   User          @relation(fields: [authorId], references: [id])
+  posts    ForumPost[]
+
+  @@map("forum_threads")
+}
+
+model ForumPost {
+  id          Int       @id @default(autoincrement())
+  threadId    Int       @map("thread_id")
+  authorId    Int       @map("author_id")
+  content     String    @db.LongText
+  isFirstPost Boolean   @default(false) @map("is_first_post")
+  isEdited    Boolean   @default(false) @map("is_edited")
+  editedAt    DateTime? @map("edited_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  deletedAt   DateTime? @map("deleted_at")
+
+  thread    ForumThread     @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  author    User            @relation(fields: [authorId], references: [id])
+  reactions ForumReaction[]
+
+  @@map("forum_posts")
+}
+
+model ForumReaction {
+  id        Int          @id @default(autoincrement())
+  postId    Int          @map("post_id")
+  userId    Int          @map("user_id")
+  type      ReactionType
+  createdAt DateTime     @default(now()) @map("created_at")
+
+  post ForumPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, userId, type])
+  @@map("forum_reactions")
+}
+
+enum ReactionType {
+  LIKE
+  HELPFUL
+  FUNNY
+}
+
+// ─────────────────────────────────────────────
+// NEWS / BLOG
+// ─────────────────────────────────────────────
+
+model NewsCategory {
+  id        Int    @id @default(autoincrement())
+  name      String @db.VarChar(50)
+  slug      String @unique @db.VarChar(50)
+  color     String @default("#1C559A") @db.VarChar(7)
+  sortOrder Int    @default(0) @map("sort_order")
+
+  posts NewsPost[]
+
+  @@map("news_categories")
+}
+
+model NewsPost {
+  id           Int          @id @default(autoincrement())
+  authorId     Int          @map("author_id")
+  categoryId   Int?         @map("category_id")
+  title        String       @db.VarChar(255)
+  slug         String       @unique @db.VarChar(255)
+  excerpt      String?      @db.Text
+  content      String       @db.LongText
+  thumbnailUrl String?      @map("thumbnail_url") @db.VarChar(500)
+  tags         Json         @default("[]")
+  isPublished  Boolean      @default(false) @map("is_published")
+  publishedAt  DateTime?    @map("published_at")
+  createdAt    DateTime     @default(now()) @map("created_at")
+  updatedAt    DateTime     @updatedAt @map("updated_at")
+
+  author   User          @relation(fields: [authorId], references: [id])
+  category NewsCategory? @relation(fields: [categoryId], references: [id])
+
+  @@map("news_posts")
+}
+
+// ─────────────────────────────────────────────
+// GESETZBÜCHER
+// ─────────────────────────────────────────────
+
+model LawBook {
+  id                  Int       @id @default(autoincrement())
+  name                String    @db.VarChar(100)
+  slug                String    @unique @db.VarChar(100)
+  description         String?   @db.Text
+  colorAccent         String    @default("#1C559A") @map("color_accent") @db.VarChar(7)
+  sortOrder           Int       @default(0) @map("sort_order")
+  isPublished         Boolean   @default(true) @map("is_published")
+  googleDocsSourceUrl String?   @map("google_docs_source_url") @db.VarChar(500)
+  lastSyncedAt        DateTime? @map("last_synced_at")
+  createdAt           DateTime  @default(now()) @map("created_at")
+
+  chapters LawChapter[]
+
+  @@map("law_books")
+}
+
+model LawChapter {
+  id        Int    @id @default(autoincrement())
+  bookId    Int    @map("book_id")
+  number    String @db.VarChar(20)
+  title     String @db.VarChar(255)
+  sortOrder Int    @default(0) @map("sort_order")
+
+  book       LawBook        @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  paragraphs LawParagraph[]
+
+  @@map("law_chapters")
+}
+
+model LawParagraph {
+  id              Int      @id @default(autoincrement())
+  chapterId       Int      @map("chapter_id")
+  bookId          Int      @map("book_id")
+  paragraphNumber String   @map("paragraph_number") @db.VarChar(20)
+  title           String   @db.VarChar(255)
+  content         String   @db.LongText
+  references      Json     @default("[]")
+  sortOrder       Int      @default(0) @map("sort_order")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  chapter LawChapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+
+  @@map("law_paragraphs")
+}
+
+// ─────────────────────────────────────────────
+// SUPPORT-TICKETS
+// ─────────────────────────────────────────────
+
+model TicketCategory {
+  id               Int     @id @default(autoincrement())
+  name             String  @db.VarChar(100)
+  color            String  @default("#1C559A") @db.VarChar(7)
+  discordChannelId String? @map("discord_channel_id") @db.VarChar(32)
+
+  tickets Ticket[]
+
+  @@map("ticket_categories")
+}
+
+model Ticket {
+  id              Int            @id @default(autoincrement())
+  userId          Int            @map("user_id")
+  categoryId      Int?           @map("category_id")
+  title           String         @db.VarChar(255)
+  description     String         @db.Text
+  status          TicketStatus   @default(OPEN)
+  priority        TicketPriority @default(MEDIUM)
+  assignedTo      Int?           @map("assigned_to")
+  discordThreadId String?        @map("discord_thread_id") @db.VarChar(32)
+  createdAt       DateTime       @default(now()) @map("created_at")
+  updatedAt       DateTime       @updatedAt @map("updated_at")
+  closedAt        DateTime?      @map("closed_at")
+
+  user     User            @relation(fields: [userId], references: [id])
+  category TicketCategory? @relation(fields: [categoryId], references: [id])
+  messages TicketMessage[]
+
+  @@map("tickets")
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  CLOSED
+}
+
+enum TicketPriority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+model TicketMessage {
+  id           Int      @id @default(autoincrement())
+  ticketId     Int      @map("ticket_id")
+  authorId     Int      @map("author_id")
+  content      String   @db.Text
+  isStaffReply Boolean  @default(false) @map("is_staff_reply")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  ticket Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  author User   @relation(fields: [authorId], references: [id])
+
+  @@map("ticket_messages")
+}
+
+// ─────────────────────────────────────────────
+// TEAM
+// ─────────────────────────────────────────────
+
+model Department {
+  id        Int    @id @default(autoincrement())
+  name      String @db.VarChar(100)
+  color     String @default("#1C559A") @db.VarChar(7)
+  sortOrder Int    @default(0) @map("sort_order")
+
+  members TeamMember[]
+
+  @@map("departments")
+}
+
+model TeamMember {
+  id           Int       @id @default(autoincrement())
+  userId       Int?      @unique @map("user_id")
+  departmentId Int?      @map("department_id")
+  displayName  String    @map("display_name") @db.VarChar(100)
+  position     String    @db.VarChar(100)
+  bio          String?   @db.Text
+  avatarUrl    String?   @map("avatar_url") @db.VarChar(500)
+  discordTag   String?   @map("discord_tag") @db.VarChar(50)
+  sortOrder    Int       @default(0) @map("sort_order")
+  isActive     Boolean   @default(true) @map("is_active")
+  joinedAt     DateTime? @map("joined_at")
+
+  user       User?       @relation(fields: [userId], references: [id])
+  department Department? @relation(fields: [departmentId], references: [id])
+
+  @@map("team_members")
+}
+
+// ─────────────────────────────────────────────
+// GUIDES
+// ─────────────────────────────────────────────
+
+model GuideCategory {
+  id        Int     @id @default(autoincrement())
+  name      String  @db.VarChar(100)
+  slug      String  @unique @db.VarChar(100)
+  icon      String? @db.VarChar(50)
+  sortOrder Int     @default(0) @map("sort_order")
+
+  guides Guide[]
+
+  @@map("guide_categories")
+}
+
+model Guide {
+  id                   Int      @id @default(autoincrement())
+  authorId             Int      @map("author_id")
+  categoryId           Int?     @map("category_id")
+  title                String   @db.VarChar(255)
+  slug                 String   @unique @db.VarChar(255)
+  content              String   @db.LongText
+  estimatedReadMinutes Int      @default(5) @map("estimated_read_minutes")
+  sortOrder            Int      @default(0) @map("sort_order")
+  isPublished          Boolean  @default(false) @map("is_published")
+  createdAt            DateTime @default(now()) @map("created_at")
+  updatedAt            DateTime @updatedAt @map("updated_at")
+
+  author   User           @relation(fields: [authorId], references: [id])
+  category GuideCategory? @relation(fields: [categoryId], references: [id])
+
+  @@map("guides")
+}
+
+// ─────────────────────────────────────────────
+// SYSTEM & LOGGING
+// ─────────────────────────────────────────────
+
+model ActivityLog {
+  id         Int      @id @default(autoincrement())
+  userId     Int?     @map("user_id")
+  action     String   @db.VarChar(100)
+  entityType String?  @map("entity_type") @db.VarChar(50)
+  entityId   Int?     @map("entity_id")
+  details    Json?
+  ipAddress  String?  @map("ip_address") @db.VarChar(45)
+  userAgent  String?  @map("user_agent") @db.VarChar(500)
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
+  @@map("activity_logs")
+}
+
+model SiteSetting {
+  id          Int      @id @default(autoincrement())
+  key         String   @unique @db.VarChar(100)
+  value       String   @db.Text
+  type        String   @default("STRING") @db.VarChar(20)
+  label       String   @db.VarChar(100)
+  updatedById Int?     @map("updated_by")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  updatedBy User? @relation(fields: [updatedById], references: [id], onDelete: SetNull)
+
+  @@map("site_settings")
+}
+
+model ServerStatsCache {
+  id            Int      @id @default(autoincrement())
+  onlinePlayers Int      @map("online_players")
+  maxPlayers    Int      @map("max_players")
+  uptimeSeconds Int      @map("uptime_seconds")
+  recordedAt    DateTime @default(now()) @map("recorded_at")
+
+  @@map("server_stats_cache")
+}
+
+model Notification {
+  id        Int       @id @default(autoincrement())
+  userId    Int       @map("user_id")
+  type      String    @db.VarChar(50)
+  title     String    @db.VarChar(255)
+  message   String    @db.Text
+  actionUrl String?   @map("action_url") @db.VarChar(500)
+  readAt    DateTime? @map("read_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}
