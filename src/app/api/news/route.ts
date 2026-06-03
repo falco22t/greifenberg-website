@@ -35,10 +35,10 @@ export async function GET(req: NextRequest) {
 
 const createSchema = z.object({
   title: z.string().min(5).max(255),
-  excerpt: z.string().max(500).optional(),
-  content: z.string().min(10),
-  thumbnailUrl: z.string().url().optional().or(z.literal('')),
-  categoryId: z.number().optional(),
+  excerpt: z.string().max(500).optional().nullable().transform(s => s ?? undefined),
+  content: z.string().nullable().optional().transform(s => s ?? ''),
+  thumbnailUrl: z.string().url().optional().or(z.literal('')).nullable().transform(s => s ?? ''),
+  categoryId: z.number().optional().nullable(),
   tags: z.array(z.string()).optional(),
   isPublished: z.boolean().default(false),
 })

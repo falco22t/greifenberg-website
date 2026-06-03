@@ -6,7 +6,7 @@ import { ChevronRight, Calendar, User, ArrowLeft, Tag } from 'lucide-react'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 
 type Props = { params: Promise<{ slug: string }> }
-export const revalidate = 300
+export const revalidate = 0
 
 async function getPost(slug: string) {
   try {

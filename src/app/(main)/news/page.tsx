@@ -5,7 +5,7 @@ import { ChevronRight, Calendar, Tag, ArrowRight } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 
 export const metadata: Metadata = { title: 'News' }
-export const revalidate = 60
+export const revalidate = 0
 
 async function getData(page: number, category?: string) {
   try {
