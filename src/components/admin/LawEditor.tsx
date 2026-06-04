@@ -98,8 +98,9 @@ export default function LawEditor({ book: initialBook }: Props) {
       })
       const data = await res.json()
       if (!res.ok) { setError(data.error); return }
-      setSuccess(true)
-      setTimeout(() => setSuccess(false), 3000)
+      // Seite neu laden damit alle _new/_dirty-Flags und negativen IDs
+      // durch echte DB-IDs ersetzt werden → kein doppeltes Anlegen mehr
+      window.location.reload()
     } catch { setError('Verbindungsfehler.') }
     finally { setSaving(false) }
   }
