@@ -56,9 +56,10 @@ export async function POST(req: NextRequest) {
 
       userId = user.id
 
-      // Update user's permission role if provided
+      // Update user's permission role if provided + Sessions löschen (neue Rolle wirkt sofort)
       if (userRole) {
         await prisma.user.update({ where: { id: user.id }, data: { role: userRole } })
+        await prisma.session.deleteMany({ where: { userId: user.id } })
       }
     }
 

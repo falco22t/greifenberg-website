@@ -45,14 +45,16 @@ export async function PATCH(req: NextRequest, { params }: Params) {
 
         newUserId = user.id
 
-        // Berechtigungs-Rolle setzen wenn angegeben
+        // Berechtigungs-Rolle setzen + Sessions löschen (neue Rolle wirkt sofort beim nächsten Login)
         if (body.userRole) {
           await prisma.user.update({ where: { id: user.id }, data: { role: body.userRole } })
+          await prisma.session.deleteMany({ where: { userId: user.id } })
         }
       }
     } else if (body.userRole && member.userId) {
-      // Nur Rolle aktualisieren wenn kein E-Mail-Wechsel
+      // Nur Rolle aktualisieren + Sessions löschen
       await prisma.user.update({ where: { id: member.userId }, data: { role: body.userRole } })
+      await prisma.session.deleteMany({ where: { userId: member.userId } })
     }
 
     const updated = await prisma.teamMember.update({

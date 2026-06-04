@@ -13,6 +13,7 @@ export default function ProfilEinstellungenPage() {
   const { user, loading, refresh } = useAuth()
   const router = useRouter()
 
+  const [username, setUsername]          = useState('')
   const [email, setEmail]               = useState('')
   const [currentPassword, setCurrent]   = useState('')
   const [newPassword, setNewPw]         = useState('')
@@ -24,8 +25,24 @@ export default function ProfilEinstellungenPage() {
 
   useEffect(() => {
     if (!loading && !user) router.replace('/auth/login?redirect=/profil/einstellungen')
-    if (user) setEmail(user.email)
+    if (user) { setEmail(user.email); setUsername(user.username) }
   }, [user, loading, router])
+
+  const saveUsername = async () => {
+    setSaving(true); setError(null); setSuccess(null)
+    try {
+      const res = await fetch('/api/profil/einstellungen', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username }),
+      })
+      const data = await res.json()
+      if (!res.ok) { setError(data.error); return }
+      setSuccess('Benutzername erfolgreich geändert.')
+      refresh()
+    } catch { setError('Verbindungsfehler.') }
+    finally { setSaving(false) }
+  }
 
   const saveEmail = async () => {
     setSaving(true); setError(null); setSuccess(null)
@@ -91,6 +108,23 @@ export default function ProfilEinstellungenPage() {
             <CheckCircle className="w-4 h-4 flex-shrink-0" />{success}
           </div>
         )}
+
+        {/* Benutzername */}
+        <div className="glass rounded-2xl border border-white/6 p-6 mb-4">
+          <h2 className="font-bold text-white mb-4">Benutzername</h2>
+          <div className="space-y-1.5 mb-4">
+            <Label className="text-slate-300 text-sm">Neuer Benutzername</Label>
+            <Input value={username} onChange={(e) => setUsername(e.target.value)}
+              placeholder="Nur Buchstaben, Zahlen und _"
+              className="bg-surface-2 border-white/8 text-white focus:border-brand/50 h-11" />
+            <p className="text-xs text-slate-500">3–32 Zeichen, nur Buchstaben, Zahlen und Unterstrich.</p>
+          </div>
+          <Button onClick={saveUsername} disabled={saving || username === user?.username || username.length < 3}
+            className="gradient-brand text-white font-semibold gap-2">
+            {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+            Speichern
+          </Button>
+        </div>
 
         {/* E-Mail */}
         <div className="glass rounded-2xl border border-white/6 p-6 mb-4">
