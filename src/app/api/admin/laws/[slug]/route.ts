@@ -8,8 +8,8 @@ import type { LawBook, LawChapter, LawParagraph } from '@/types/laws'
 type Params = { params: Promise<{ slug: string }> }
 
 interface ChapterPayload extends Omit<LawChapter, 'paragraphs'> {
-  _new?: boolean; _deleted?: boolean; _dirty?: boolean
-  paragraphs: Array<LawParagraph & { _new?: boolean; _deleted?: boolean; _dirty?: boolean }>
+  _deleted?: boolean
+  paragraphs: Array<LawParagraph & { _deleted?: boolean }>
 }
 
 export async function PUT(req: NextRequest, { params }: Params) {
@@ -22,7 +22,7 @@ export async function PUT(req: NextRequest, { params }: Params) {
     if (!existing) return NextResponse.json({ error: 'Nicht gefunden.' }, { status: 404 })
 
     await prisma.$transaction(async (tx) => {
-      // Update book metadata
+      // Buchmetadaten aktualisieren
       await tx.lawBook.update({
         where: { slug },
         data: {
@@ -35,30 +35,38 @@ export async function PUT(req: NextRequest, { params }: Params) {
       })
 
       for (const ch of body.chapters) {
-        if (ch._deleted && ch.id > 0) {
-          await tx.lawChapter.delete({ where: { id: ch.id } }).catch(() => {})
+        // Kapitel löschen
+        if (ch._deleted) {
+          if (ch.id > 0) await tx.lawChapter.delete({ where: { id: ch.id } }).catch(() => {})
           continue
         }
 
-        let chapterId = ch.id
-        if (ch._new || ch.id < 0) {
+        let chapterId: number
+
+        if (ch.id < 0) {
+          // Negative ID = neues Kapitel anlegen
           const newCh = await tx.lawChapter.create({
             data: { bookId: existing.id, number: ch.number, title: ch.title, sortOrder: ch.sortOrder },
           })
           chapterId = newCh.id
-        } else if (ch._dirty) {
+        } else {
+          // Positive ID = immer aktualisieren (kein Duplikat möglich)
           await tx.lawChapter.update({
             where: { id: ch.id },
             data: { number: ch.number, title: ch.title, sortOrder: ch.sortOrder },
-          })
+          }).catch(() => {}) // Fehler ignorieren falls Kapitel fehlt
+          chapterId = ch.id
         }
 
+        // Paragraphen verarbeiten
         for (const p of ch.paragraphs) {
-          if ((p as { _deleted?: boolean })._deleted && p.id > 0) {
-            await tx.lawParagraph.delete({ where: { id: p.id } }).catch(() => {})
+          if (p._deleted) {
+            if (p.id > 0) await tx.lawParagraph.delete({ where: { id: p.id } }).catch(() => {})
             continue
           }
-          if ((p as { _new?: boolean })._new || p.id < 0) {
+
+          if (p.id < 0) {
+            // Negative ID = neuen Paragraphen anlegen
             await tx.lawParagraph.create({
               data: {
                 chapterId,
@@ -70,7 +78,8 @@ export async function PUT(req: NextRequest, { params }: Params) {
                 sortOrder: p.sortOrder,
               },
             })
-          } else if ((p as { _dirty?: boolean })._dirty) {
+          } else {
+            // Positive ID = immer aktualisieren
             await tx.lawParagraph.update({
               where: { id: p.id },
               data: {
@@ -78,8 +87,9 @@ export async function PUT(req: NextRequest, { params }: Params) {
                 title: p.title,
                 content: p.content,
                 references: Array.isArray(p.references) ? p.references : [],
+                sortOrder: p.sortOrder,
               },
-            })
+            }).catch(() => {})
           }
         }
       }
