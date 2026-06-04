@@ -6,7 +6,7 @@ type Params = { params: Promise<{ id: string }> }
 
 export async function PATCH(req: NextRequest, { params }: Params) {
   try {
-    await requireAuth('ADMIN')
+    await requireAuth('OWNER')
     const { id } = await params
     const body = await req.json() as { name?: string; color?: string; sortOrder?: number }
     const dept = await prisma.department.update({
@@ -26,7 +26,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
 
 export async function DELETE(_req: NextRequest, { params }: Params) {
   try {
-    await requireAuth('ADMIN')
+    await requireAuth('OWNER')
     const { id } = await params
     await prisma.department.delete({ where: { id: Number(id) } })
     return NextResponse.json({ success: true })

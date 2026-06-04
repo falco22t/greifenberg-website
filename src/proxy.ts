@@ -20,7 +20,8 @@ export function proxy(req: NextRequest) {
     if (!payload) {
       return NextResponse.redirect(new URL('/auth/login?redirect=' + pathname, req.url))
     }
-    if (payload.role !== 'ADMIN' && payload.role !== 'OWNER') {
+    const allowed = ['MOD', 'ADMIN', 'OWNER']
+    if (!allowed.includes(payload.role)) {
       return NextResponse.redirect(new URL('/', req.url))
     }
   }

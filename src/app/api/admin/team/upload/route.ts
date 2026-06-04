@@ -15,7 +15,7 @@ function getUploadDir(): string {
 
 export async function POST(req: NextRequest) {
   try {
-    await requireAuth('ADMIN')
+    await requireAuth('OWNER')
 
     const form = await req.formData()
     const file = form.get('file') as File | null

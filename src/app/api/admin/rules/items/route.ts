@@ -4,7 +4,7 @@ import { requireAuth } from '@/lib/auth'
 
 export async function POST(req: NextRequest) {
   try {
-    await requireAuth('ADMIN')
+    await requireAuth('OWNER')
     const { sectionId, number, title, content, sortOrder } = await req.json() as {
       sectionId: number; number: string; title: string; content: string; sortOrder?: number
     }

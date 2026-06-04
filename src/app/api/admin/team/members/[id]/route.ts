@@ -7,7 +7,7 @@ type Params = { params: Promise<{ id: string }> }
 
 export async function PATCH(req: NextRequest, { params }: Params) {
   try {
-    await requireAuth('ADMIN')
+    await requireAuth('OWNER')
     const { id } = await params
     const body = await req.json() as {
       email?: string | null
@@ -87,7 +87,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
 
 export async function DELETE(_req: NextRequest, { params }: Params) {
   try {
-    await requireAuth('ADMIN')
+    await requireAuth('OWNER')
     const { id } = await params
     await prisma.teamMember.delete({ where: { id: Number(id) } })
     return NextResponse.json({ success: true })

@@ -183,7 +183,7 @@ export default function Navbar({ lawBooks = [] }: { lawBooks?: LawBook[] }) {
                     >
                       <HelpCircle className="w-4 h-4" /> Meine Tickets
                     </DropdownMenuItem>
-                    {hasRole(user.role, 'ADMIN') && (
+                    {hasRole(user.role, 'MOD') && (
                       <>
                         <DropdownMenuSeparator className="bg-white/8" />
                         <DropdownMenuItem

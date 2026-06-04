@@ -5,7 +5,7 @@ import type { UserRole } from '@prisma/client'
 
 export async function GET() {
   try {
-    await requireAuth('ADMIN')
+    await requireAuth('OWNER')
     const members = await prisma.teamMember.findMany({
       orderBy: [{ department: { sortOrder: 'asc' } }, { sortOrder: 'asc' }],
       include: {
@@ -22,7 +22,7 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   try {
-    const session = await requireAuth('ADMIN')
+    const session = await requireAuth('OWNER')
     const {
       email, displayName, position, displayRole,
       badgeColor, departmentId, bio, discordTag, avatarUrl,

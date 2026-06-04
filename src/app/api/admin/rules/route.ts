@@ -4,7 +4,7 @@ import { requireAuth } from '@/lib/auth'
 
 export async function GET() {
   try {
-    await requireAuth('ADMIN')
+    await requireAuth('OWNER')
     const sections = await prisma.ruleSection.findMany({
       orderBy: { sortOrder: 'asc' },
       include: { rules: { orderBy: { sortOrder: 'asc' } } },

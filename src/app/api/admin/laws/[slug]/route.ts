@@ -14,7 +14,7 @@ interface ChapterPayload extends Omit<LawChapter, 'paragraphs'> {
 
 export async function PUT(req: NextRequest, { params }: Params) {
   try {
-    const session = await requireAuth('ADMIN')
+    const session = await requireAuth('OWNER')
     const { slug } = await params
     const body = await req.json() as { book: LawBook; chapters: ChapterPayload[] }
 

@@ -4,7 +4,7 @@ import { requireAuth } from '@/lib/auth'
 
 export async function POST(req: NextRequest) {
   try {
-    const session = await requireAuth('ADMIN')
+    const session = await requireAuth('OWNER')
     const { title, sortOrder } = await req.json() as { title: string; sortOrder?: number }
     if (!title?.trim()) return NextResponse.json({ error: 'Titel fehlt.' }, { status: 400 })
 

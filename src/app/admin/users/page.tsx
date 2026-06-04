@@ -6,17 +6,25 @@ export const revalidate = 0
 
 async function getUsers() {
   try {
-    return await prisma.user.findMany({
+    const users = await prisma.user.findMany({
       orderBy: { createdAt: 'desc' },
-      take: 100,
-      select: { id: true, username: true, email: true, role: true, isBanned: true, createdAt: true, lastLoginAt: true },
+      take: 200,
+      select: {
+        id: true, username: true, email: true, role: true,
+        isBanned: true, createdAt: true, lastLoginAt: true,
+        sessions: {
+          orderBy: { createdAt: 'desc' },
+          take: 1,
+          select: { ipAddress: true },
+        },
+      },
     })
+    return users.map((u) => ({ ...u, lastIp: u.sessions[0]?.ipAddress ?? null }))
   } catch { return [] }
 }
 
 export default async function AdminUsersPage() {
   const users = await getUsers()
-
   return (
     <div className="p-8">
       <div className="flex items-center justify-between mb-6">

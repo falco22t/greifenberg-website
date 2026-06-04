@@ -15,7 +15,7 @@ const schema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
-    const session = await requireAuth('ADMIN')
+    const session = await requireAuth('OWNER')
     const body = await req.json()
     const parsed = schema.safeParse(body)
     if (!parsed.success) return NextResponse.json({ error: parsed.error.issues[0]?.message }, { status: 400 })

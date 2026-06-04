@@ -17,7 +17,7 @@ export async function GET(_req: NextRequest, { params }: Params) {
 
 export async function PATCH(req: NextRequest, { params }: Params) {
   try {
-    const session = await requireAuth('ADMIN')
+    const session = await requireAuth('OWNER')
     const { slug } = await params
     const body = await req.json()
 
@@ -39,7 +39,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
 
 export async function DELETE(_req: NextRequest, { params }: Params) {
   try {
-    const session = await requireAuth('ADMIN')
+    const session = await requireAuth('OWNER')
     const { slug } = await params
     const post = await prisma.newsPost.findUnique({ where: { slug } })
     if (!post) return NextResponse.json({ error: 'Nicht gefunden.' }, { status: 404 })

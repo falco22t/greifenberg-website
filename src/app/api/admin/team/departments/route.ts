@@ -4,7 +4,7 @@ import { requireAuth } from '@/lib/auth'
 
 export async function GET() {
   try {
-    await requireAuth('ADMIN')
+    await requireAuth('OWNER')
     const departments = await prisma.department.findMany({
       orderBy: { sortOrder: 'asc' },
       include: { _count: { select: { members: true } } },
@@ -18,7 +18,7 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   try {
-    await requireAuth('ADMIN')
+    await requireAuth('OWNER')
     const { name, color, sortOrder } = await req.json() as { name: string; color?: string; sortOrder?: number }
     if (!name?.trim()) return NextResponse.json({ error: 'Name fehlt.' }, { status: 400 })
 
