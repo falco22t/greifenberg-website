@@ -3,6 +3,8 @@ import { notFound } from 'next/navigation'
 import LawEditor from '@/components/admin/LawEditor'
 import type { LawBook } from '@/types/laws'
 
+export const dynamic = 'force-dynamic'
+
 export default async function AdminLawEditPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
   const book = await prisma.lawBook.findUnique({

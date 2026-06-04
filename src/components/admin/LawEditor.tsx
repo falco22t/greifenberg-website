@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronDown, ChevronRight, Plus, Trash2, Save, Loader2, AlertCircle, GripVertical, RefreshCw } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -17,6 +18,7 @@ interface EditState {
 }
 
 export default function LawEditor({ book: initialBook }: Props) {
+  const router = useRouter()
   const [book, setBook] = useState(initialBook)
   const [state, setState] = useState<EditState>({ chapters: initialBook.chapters as LawChapter[] })
   const [openChapter, setOpenChapter] = useState<number | null>(state.chapters[0]?.id ?? null)
@@ -98,9 +100,10 @@ export default function LawEditor({ book: initialBook }: Props) {
       })
       const data = await res.json()
       if (!res.ok) { setError(data.error); return }
-      // Seite neu laden damit alle _new/_dirty-Flags und negativen IDs
-      // durch echte DB-IDs ersetzt werden → kein doppeltes Anlegen mehr
-      window.location.reload()
+      // Hard-Navigation zur gleichen Seite: Router-Cache umgehen,
+      // Server-Component neu rendern → frische DB-IDs im Editor
+      router.push(`/admin/gesetze/${book.slug}`)
+      router.refresh()
     } catch { setError('Verbindungsfehler.') }
     finally { setSaving(false) }
   }
