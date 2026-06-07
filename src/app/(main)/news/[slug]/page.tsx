@@ -86,9 +86,9 @@ export default async function NewsArticlePage({ params }: Props) {
           prose-code:text-brand-light prose-code:bg-brand/10 prose-code:px-1 prose-code:rounded
           prose-a:text-brand-light prose-a:no-underline hover:prose-a:underline
           prose-blockquote:border-brand/40 prose-blockquote:text-slate-400
-          whitespace-pre-wrap text-slate-300 leading-relaxed text-sm"
+          text-slate-300 leading-relaxed text-sm"
         >
-          {post.content}
+          <div dangerouslySetInnerHTML={{ __html: post.content }} />
         </div>
 
         {/* Tags */}
