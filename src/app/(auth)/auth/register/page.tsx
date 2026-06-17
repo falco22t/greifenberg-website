@@ -8,6 +8,7 @@ import { Eye, EyeOff, UserPlus, AlertCircle, CheckCircle2, Loader2 } from 'lucid
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { useAuth } from '@/contexts/AuthContext'
 
 interface FormState {
   username: string
@@ -37,6 +38,7 @@ function PasswordStrength({ password }: { password: string }) {
 
 export default function RegisterPage() {
   const router = useRouter()
+  const { refresh } = useAuth()
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -82,8 +84,8 @@ export default function RegisterPage() {
         return
       }
 
+      await refresh()
       router.push('/')
-      router.refresh()
     } catch {
       setError('Verbindungsfehler. Bitte versuche es erneut.')
     } finally {

@@ -8,9 +8,11 @@ import { Eye, EyeOff, LogIn, AlertCircle, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { useAuth } from '@/contexts/AuthContext'
 
 export default function LoginPage() {
   const router = useRouter()
+  const { refresh } = useAuth()
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -40,8 +42,8 @@ export default function LoginPage() {
         return
       }
 
+      await refresh()
       router.push(data.redirectTo ?? '/')
-      router.refresh()
     } catch {
       setError('Verbindungsfehler. Bitte versuche es erneut.')
     } finally {
