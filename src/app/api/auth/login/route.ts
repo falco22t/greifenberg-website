@@ -90,10 +90,17 @@ export async function POST(req: NextRequest) {
       userAgent: userAgent ?? undefined,
     })
 
+    // secure-Flag am tatsächlichen Protokoll festmachen, nicht an NODE_ENV.
+    // Sonst wirft der Browser das Cookie weg, wenn die Seite über HTTP läuft.
+    const forwardedProto = req.headers.get('x-forwarded-proto')
+    const isHttps = forwardedProto
+      ? forwardedProto.split(',')[0].trim() === 'https'
+      : new URL(req.url).protocol === 'https:'
+
     const cookieStore = await cookies()
     cookieStore.set('grp_session', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: isHttps,
       sameSite: 'lax',
       path: '/',
       maxAge: 60 * 60 * 24 * 7,
