@@ -1,10 +1,18 @@
 import { prisma } from '@/lib/prisma'
 import { MessageSquare } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
+import { getSession } from '@/lib/auth'
+import ForumThreadActions from '@/components/admin/ForumThreadActions'
+import type { UserRole } from '@prisma/client'
 
 export const revalidate = 0
 
+const ROLE_ORDER: UserRole[] = ['GUEST', 'USER', 'MOD', 'ADMIN', 'OWNER']
+
 export default async function AdminForumPage() {
+  const session = await getSession()
+  const canDelete = !!session && ROLE_ORDER.indexOf(session.role) >= ROLE_ORDER.indexOf('ADMIN')
+
   const threads = await prisma.forumThread.findMany({
     orderBy: { createdAt: 'desc' }, take: 50,
     include: { author: { select: { username: true } }, category: { select: { name: true } } },
@@ -19,7 +27,7 @@ export default async function AdminForumPage() {
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-white/6 text-left">
-              {['Thread', 'Kategorie', 'Von', 'Antworten', 'Status', 'Erstellt'].map((h) => (
+              {['Thread', 'Kategorie', 'Von', 'Antworten', 'Status', 'Erstellt', 'Aktionen'].map((h) => (
                 <th key={h} className="px-4 py-3 text-xs text-slate-500 font-semibold uppercase tracking-wider">{h}</th>
               ))}
             </tr>
@@ -37,6 +45,14 @@ export default async function AdminForumPage() {
                   {!t.isPinned && !t.isLocked && <span className="text-slate-600 text-xs">Normal</span>}
                 </td>
                 <td className="px-4 py-3 text-slate-500 text-xs">{new Date(t.createdAt).toLocaleDateString('de-DE')}</td>
+                <td className="px-4 py-3">
+                  <ForumThreadActions
+                    threadId={t.id}
+                    isPinned={t.isPinned}
+                    isLocked={t.isLocked}
+                    canDelete={canDelete}
+                  />
+                </td>
               </tr>
             ))}
           </tbody>

@@ -30,7 +30,14 @@ export default function ThreadView({ thread, posts: initialPosts, categorySlug, 
 
   const handleDelete = async (postId: number) => {
     if (!confirm('Beitrag wirklich löschen?')) return
-    // Soft-delete: content ersetzen (via API — hier nur UI-Update)
+
+    const res = await fetch(`/api/forum/posts/${postId}`, { method: 'DELETE' })
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}))
+      alert(data.error ?? 'Beitrag konnte nicht gelöscht werden.')
+      return
+    }
+
     setPosts((prev) =>
       prev.map((p) => p.id === postId ? { ...p, deletedAt: new Date().toISOString() } : p)
     )
