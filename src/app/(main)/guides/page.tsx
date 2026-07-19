@@ -96,7 +96,7 @@ export default async function GuidesPage() {
         <div className="mt-12 p-6 glass-brand rounded-2xl border border-brand/20 text-center">
           <p className="text-white font-bold mb-1">Noch Fragen?</p>
           <p className="text-slate-400 text-sm mb-4">Unser Team hilft dir auf Discord weiter.</p>
-          <a href="https://discord.gg/TspeGxXr2C" target="_blank" rel="noopener noreferrer"
+          <a href="https://discord.gg/greifenbergrp" target="_blank" rel="noopener noreferrer"
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl gradient-brand text-white font-semibold text-sm hover:opacity-90 transition-opacity">
             Discord beitreten <ArrowRight className="w-4 h-4" />
           </a>

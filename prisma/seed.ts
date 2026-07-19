@@ -349,7 +349,7 @@ async function main() {
 </ul>
 <h3>Bewerbungsprozess</h3>
 <ol>
-<li>Tritt unserem Discord bei: discord.gg/TspeGxXr2C</li>
+<li>Tritt unserem Discord bei: discord.gg/greifenbergrp</li>
 <li>Navigiere zum entsprechenden Bewerbungskanal</li>
 <li>Fülle das Bewerbungsformular vollständig aus</li>
 <li>Warte auf die Rückmeldung des Fraktionsführers</li>

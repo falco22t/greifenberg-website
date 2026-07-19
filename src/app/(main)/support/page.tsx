@@ -57,7 +57,7 @@ export default function SupportPage() {
                 ))}
               </div>
             </div>
-            <a href="https://discord.gg/greifenberg" target="_blank" rel="noopener noreferrer"
+            <a href="https://discord.gg/greifenbergrp" target="_blank" rel="noopener noreferrer"
               className="flex-shrink-0 flex items-center gap-2.5 px-6 py-3 rounded-xl font-bold text-white
                 bg-[#5865F2] hover:bg-[#4752C4] transition-colors shadow-lg shadow-[#5865F2]/25">
               Discord beitreten <ExternalLink className="w-4 h-4" />
@@ -83,7 +83,7 @@ export default function SupportPage() {
             {' '}oder das{' '}
             <Link href="/regelwerk" className="text-brand-light hover:text-white transition-colors">Regelwerk</Link>
             . Für alles andere sind wir auf{' '}
-            <a href="https://discord.gg/greifenberg" target="_blank" rel="noopener noreferrer"
+            <a href="https://discord.gg/greifenbergrp" target="_blank" rel="noopener noreferrer"
               className="text-brand-light hover:text-white transition-colors">Discord</a>
             {' '}für dich da.
           </p>

@@ -28,7 +28,7 @@ export default function ImpressumPage() {
           <div>
             <h2 className="text-white font-bold mb-2">Kontakt</h2>
             <p>E-Mail: admin@greifenberg-rp.de<br />
-            Discord: <a href="https://discord.gg/TspeGxXr2C" target="_blank" rel="noopener noreferrer" className="text-brand-light hover:text-white transition-colors">discord.gg/TspeGxXr2C</a></p>
+            Discord: <a href="https://discord.gg/greifenbergrp" target="_blank" rel="noopener noreferrer" className="text-brand-light hover:text-white transition-colors">discord.gg/greifenbergrp</a></p>
           </div>
 
           <div>

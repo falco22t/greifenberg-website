@@ -28,7 +28,7 @@ export default function CTASection() {
               Registriere dich jetzt, lies dir unseren Einsteiger-Guide durch und tauche in die Welt von Greifenberg ein.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <a href="https://discord.gg/TspeGxXr2C" target="_blank" rel="noopener noreferrer">
+              <a href="https://discord.gg/greifenbergrp" target="_blank" rel="noopener noreferrer">
                 <Button
                   size="lg"
                   className="gradient-brand glow-brand text-white font-bold px-8 py-6 rounded-xl gap-2 hover:opacity-90"

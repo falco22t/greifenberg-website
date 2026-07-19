@@ -79,7 +79,7 @@ export default function HeroSection() {
           transition={{ duration: 0.6, delay: 0.3 }}
           className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16"
         >
-          <a href="https://discord.gg/TspeGxXr2C" target="_blank" rel="noopener noreferrer">
+          <a href="https://discord.gg/greifenbergrp" target="_blank" rel="noopener noreferrer">
             <Button
               size="lg"
               className="gradient-brand glow-brand text-white font-bold px-8 py-6 text-base rounded-xl hover:opacity-90 transition-opacity gap-2"

@@ -15,7 +15,7 @@ const supportLinks: FooterLink[] = [
   { label: 'Guide für Einsteiger', href: '/guides' },
   { label: 'Support-Tickets', href: '/support' },
   { label: 'Regelwerk', href: '/regelwerk' },
-  { label: 'Discord', href: 'https://discord.gg/greifenberg', external: true },
+  { label: 'Discord', href: 'https://discord.gg/greifenbergrp', external: true },
 ]
 
 export default function Footer({ lawBooks = [] }: { lawBooks?: LawBook[] }) {
